@@ -18,7 +18,7 @@ test_all_cond.py
 test_cond.py
 test_draft.py
 test_publish.py
-js/
+/js/
 
 # Environments
 .env
