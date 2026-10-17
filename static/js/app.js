@@ -287,6 +287,27 @@ async function analyzeCoin(coinHint = '', yearHint = '', mintHint = '') {
     return;
   }
 
+  // If AI Auto-Detect is chosen (no series selected) but no Gemini API key is configured
+  if (!finalCoinHint && !state.geminiKey && state.operationMode === 'standalone') {
+    showToast('Gemini API key required for AI Auto-Detect, or select a series above', '🔑');
+    const seriesSelect = document.getElementById('coinSeriesSelect');
+    if (seriesSelect) {
+      seriesSelect.style.borderColor = 'var(--ios-gold)';
+      seriesSelect.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      setTimeout(() => { seriesSelect.style.borderColor = ''; }, 3000);
+    }
+    const settingsModal = document.getElementById('settingsModal');
+    if (settingsModal) {
+      const opModeSelect = document.getElementById('settingOperationMode');
+      if (opModeSelect) opModeSelect.value = state.operationMode;
+      document.getElementById('settingGeminiKey').value = state.geminiKey;
+      document.getElementById('settingEbayToken').value = state.ebayToken;
+      document.getElementById('settingSilverSpot').value = state.silverSpot;
+      settingsModal.classList.add('open');
+    }
+    return;
+  }
+
   analyzeBtn.disabled = true;
   analyzeBtn.innerHTML = `<span>⏳</span> Analyzing Numismatics & Market Data...`;
 
@@ -312,20 +333,35 @@ async function analyzeCoin(coinHint = '', yearHint = '', mintHint = '') {
         body: JSON.stringify(payload)
       });
 
-      if (!res.ok) throw new Error('Analysis request failed');
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => ({}));
+        if (errJson.needs_api_key || errJson.error) {
+          throw new Error(errJson.error || 'Gemini API key required');
+        }
+        throw new Error('Analysis request failed (' + res.status + ')');
+      }
+
       const data = await res.json();
       state.currentReport = data;
 
       renderReport(data);
       switchTab('tabIdentify');
       if (data.ai_identified) {
-        showToast(`AI Vision Active: ${data.vision_model || 'Gemini 3.8 Flash'}`, '🎯');
+        showToast(`AI Vision Active: ${data.vision_model || 'Gemini 2.5 Flash'}`, '🎯');
       } else {
         showToast('Identified via Numismatic Catalog Reference!', '📚');
       }
       return;
     } catch (serverErr) {
-      console.warn('PC Server endpoint unavailable, falling back to Standalone iOS Engine:', serverErr);
+      console.warn('PC Server identify error:', serverErr);
+      if (!finalCoinHint && !state.geminiKey) {
+        showToast(serverErr.message || 'Gemini API key required for AI Auto-Detect', '🔑');
+        const settingsModal = document.getElementById('settingsModal');
+        if (settingsModal) settingsModal.classList.add('open');
+        analyzeBtn.disabled = false;
+        analyzeBtn.innerHTML = `<span>🔍</span> Identify Coin & Check Value`;
+        return;
+      }
       showToast('PC server unavailable — switched to Standalone Engine ⚡', '🔄');
       state.operationMode = 'standalone';
       localStorage.setItem('coinvault_operation_mode', 'standalone');
@@ -349,8 +385,26 @@ async function analyzeCoin(coinHint = '', yearHint = '', mintHint = '') {
         analysisData = await window.CoinVaultEngine.analyzeCoinDirectGemini(imagesToAnalyze, state.geminiKey);
       } catch (geminiErr) {
         console.warn('Direct Gemini Vision call error:', geminiErr);
-        showToast('Gemini Vision fallback to on-device catalog', 'ℹ️');
+        if (!finalCoinHint) {
+          showToast('AI Vision error: ' + (geminiErr.message || 'Check API key') + '. Select series manually or check key.', '⚠️');
+          const settingsModal = document.getElementById('settingsModal');
+          if (settingsModal) settingsModal.classList.add('open');
+          analyzeBtn.disabled = false;
+          analyzeBtn.innerHTML = `<span>🔍</span> Identify Coin & Check Value`;
+          return;
+        } else {
+          showToast('AI Vision call failed; using manually selected series', 'ℹ️');
+        }
       }
+    }
+
+    if (!analysisData && !finalCoinHint) {
+      showToast('Gemini API key required for AI Auto-Detect, or select coin series above', '🔑');
+      const settingsModal = document.getElementById('settingsModal');
+      if (settingsModal) settingsModal.classList.add('open');
+      analyzeBtn.disabled = false;
+      analyzeBtn.innerHTML = `<span>🔍</span> Identify Coin & Check Value`;
+      return;
     }
 
     // Generate comprehensive report with client-side engine
@@ -372,13 +426,13 @@ async function analyzeCoin(coinHint = '', yearHint = '', mintHint = '') {
     switchTab('tabIdentify');
 
     if (report.ai_identified) {
-      showToast(`⚡ Direct AI Vision: ${report.vision_model} (No PC needed)`, '🎯');
+      showToast(`⚡ Direct AI Vision: ${report.vision_model || 'Gemini 2.5 Flash'} (No PC needed)`, '🎯');
     } else {
       showToast('⚡ Identified on iOS with Numismatic Engine!', '📚');
     }
   } catch (err) {
     console.error('Error analyzing coin standalone:', err);
-    showToast('Error analyzing coin. Please try again.', '❌');
+    showToast('Error analyzing coin: ' + (err.message || 'Please try again.'), '❌');
   } finally {
     analyzeBtn.disabled = false;
     analyzeBtn.innerHTML = `<span>🔍</span> Identify Coin & Check Value`;

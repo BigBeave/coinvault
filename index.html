@@ -120,7 +120,7 @@
           <span style="font-size:11px; color:var(--ios-gold); font-weight:normal; margin-left:6px;">Auto AI or Manual</span>
         </label>
         <select id="coinSeriesSelect" class="form-input">
-          <option value="">✨ Auto-Detect via AI Vision (Gemini 3.8 Flash)</option>
+          <option value="">✨ Auto-Detect via AI Vision (Gemini 2.5 Flash)</option>
           <optgroup label="Classic US Coinage">
             <option value="morgan_dollar">Morgan Silver Dollar (1878 - 1921)</option>
             <option value="peace_dollar">Peace Silver Dollar (1921 - 1935)</option>
@@ -195,13 +195,13 @@
       <div id="identifyContent" style="display:none;">
         <!-- Hero Identification Card -->
         <div class="coin-hero">
-          <div class="coin-hero-name" id="heroCoinName">1921 Morgan Silver Dollar</div>
-          <p id="heroSubtitle" style="color:var(--ios-gold); font-size:14px; font-weight:600;">$1.00 USD &bull; United States</p>
+          <div class="coin-hero-name" id="heroCoinName">Coin Identification</div>
+          <p id="heroSubtitle" style="color:var(--ios-gold); font-size:14px; font-weight:600;">Numismatic Grade & Valuation</p>
           <div class="coin-hero-tags" id="heroTags">
-            <span class="pill pill-gold" id="heroGrade">AU-58 (About Uncirculated)</span>
-            <span class="pill pill-silver" id="heroMint">Mint: Philadelphia</span>
-            <span class="pill pill-green" id="heroStrike">Business Strike</span>
-            <span class="pill pill-blue" id="heroAiBadge">AI Vision: Gemini 3.8 Flash</span>
+            <span class="pill pill-gold" id="heroGrade">Grade</span>
+            <span class="pill pill-silver" id="heroMint">Mint</span>
+            <span class="pill pill-green" id="heroStrike">Strike</span>
+            <span class="pill pill-blue" id="heroAiBadge">AI Vision: Gemini 2.5 Flash</span>
           </div>
         </div>
 
@@ -321,17 +321,17 @@
           <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
             <div class="form-group">
               <label class="form-label" for="listingPrice">Buy It Now ($ USD)</label>
-              <input type="number" step="0.01" id="listingPrice" class="form-input" value="59.99">
+              <input type="number" step="0.01" id="listingPrice" class="form-input" placeholder="0.00">
             </div>
             <div class="form-group">
               <label class="form-label" for="listingBid">Starting Bid ($)</label>
-              <input type="number" step="0.01" id="listingBid" class="form-input" value="39.99">
+              <input type="number" step="0.01" id="listingBid" class="form-input" placeholder="0.00">
             </div>
           </div>
 
           <div class="form-group">
             <label class="form-label" for="listingCategory">eBay Category</label>
-            <input type="text" id="listingCategory" class="form-input" readonly value="Coins: US > Dollars > Morgan (1878-1921)">
+            <input type="text" id="listingCategory" class="form-input" readonly placeholder="Category (auto-filled on coin analysis)">
           </div>
 
           <!-- Selling Action Buttons -->

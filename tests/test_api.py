@@ -177,3 +177,19 @@ def test_identify_with_custom_spot_prices(client):
     assert "mercari_listing" in data
     assert "whatnot_listing" in data
     assert "reddit_listing" in data
+
+
+def test_identify_without_key_or_hint_requires_api_key(client):
+    """Verify that uploading photos without an API key or coin hint returns a 400 prompting for key, instead of silently pretending it's a Morgan Dollar."""
+    payload = {
+        "obverse_image": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wgALCAABAAEBAREA/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPxA=",
+        "coin_hint": "",
+        "gemini_api_key": ""
+    }
+    response = client.post("/api/identify", json=payload)
+    assert response.status_code == 400
+    data = response.get_json()
+    assert data["success"] is False
+    assert data["needs_api_key"] is True
+    assert "Gemini API key" in data["error"]
+

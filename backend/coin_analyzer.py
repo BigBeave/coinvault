@@ -199,10 +199,145 @@ def analyze_coin_with_gemini(
         if resp_text.endswith("```"):
             resp_text = resp_text[:-3]
 
-        return json.loads(resp_text.strip())
+        parsed_data = json.loads(resp_text.strip())
+        parsed_data["model_used"] = model_name
+        return parsed_data
     except Exception as e:
         print(f"Gemini Vision call note/fallback: {e}")
         return None
+
+
+def create_dynamic_coin_meta(analysis_data: Optional[Dict[str, Any]], coin_hint: str = "") -> Dict[str, Any]:
+    """Dynamically construct coin metadata for unrecognized/custom coins identified by AI."""
+    raw_name = (analysis_data.get("coin_name") if analysis_data else None) or coin_hint or "Uncataloged Coin"
+    raw_denom = (analysis_data.get("denomination") if analysis_data else None) or "Collectible Coin"
+    raw_country = (analysis_data.get("country") if analysis_data else None) or "World"
+    raw_year = str(analysis_data.get("year")) if (analysis_data and analysis_data.get("year")) else "Unknown"
+    raw_comp = (analysis_data.get("composition") if analysis_data else None) or "Standard Coin Metal"
+    comp_lower = raw_comp.lower()
+    name_lower = raw_name.lower()
+    denom_lower = raw_denom.lower()
+
+    metal_type = "base"
+    purity = 0.0
+    net_oz = 0.0
+    weight_grams = 0.0
+    diameter_mm = 0.0
+
+    if "gold" in comp_lower or "gold" in name_lower:
+        metal_type = "gold"
+        purity = 0.999 if ("999" in comp_lower or "24k" in comp_lower) else 0.900
+        if "1 oz" in name_lower or "1 oz" in denom_lower or "1 oz" in comp_lower:
+            net_oz = 1.0
+            weight_grams = 31.1
+        elif "1/2 oz" in name_lower or "1/2 oz" in denom_lower:
+            net_oz = 0.5
+            weight_grams = 15.55
+        elif "1/4 oz" in name_lower or "1/4 oz" in denom_lower:
+            net_oz = 0.25
+            weight_grams = 7.78
+        elif "1/10 oz" in name_lower or "1/10 oz" in denom_lower:
+            net_oz = 0.1
+            weight_grams = 3.11
+        else:
+            net_oz = 0.25
+            weight_grams = 7.78
+    elif "silver" in comp_lower or "silver" in name_lower:
+        metal_type = "silver"
+        if ".999" in comp_lower or "fine silver" in comp_lower or "pure silver" in comp_lower:
+            purity = 0.999
+            net_oz = 1.0
+            weight_grams = 31.1
+        elif "90%" in comp_lower or ".900" in comp_lower:
+            purity = 0.900
+            if "dollar" in denom_lower or "dollar" in name_lower or "$1" in denom_lower:
+                net_oz = 0.7734
+                weight_grams = 26.73
+                diameter_mm = 38.1
+            elif "half" in denom_lower or "half" in name_lower or "50" in denom_lower:
+                net_oz = 0.3617
+                weight_grams = 12.5
+                diameter_mm = 30.6
+            elif "quarter" in denom_lower or "quarter" in name_lower or "25" in denom_lower:
+                net_oz = 0.1808
+                weight_grams = 6.25
+                diameter_mm = 24.3
+            elif "dime" in denom_lower or "dime" in name_lower or "10" in denom_lower:
+                net_oz = 0.0723
+                weight_grams = 2.5
+                diameter_mm = 17.9
+            else:
+                net_oz = 0.1808
+                weight_grams = 6.25
+                diameter_mm = 24.3
+        elif "40%" in comp_lower or ".400" in comp_lower:
+            purity = 0.400
+            net_oz = 0.1479
+            weight_grams = 11.5
+            diameter_mm = 30.6
+        else:
+            purity = 0.900
+            net_oz = 0.1808
+            weight_grams = 6.25
+            diameter_mm = 24.3
+    elif "paper" in comp_lower or "banknote" in comp_lower or "polymer" in comp_lower:
+        metal_type = "paper"
+    elif "bronze" in comp_lower:
+        metal_type = "bronze"
+    elif "copper" in comp_lower:
+        metal_type = "copper"
+
+    country_lower = raw_country.lower()
+    if any(k in country_lower for k in ("united states", "usa", "u.s.")):
+        ebay_cat_id = "253"
+        ebay_cat_name = "Coins: US"
+    elif any(k in country_lower for k in ("rome", "greece", "ancient", "byzantine")):
+        ebay_cat_id = "4733"
+        ebay_cat_name = "Coins: Ancient"
+    elif metal_type == "paper":
+        ebay_cat_id = "3411"
+        ebay_cat_name = "Paper Money: World"
+    else:
+        ebay_cat_id = "256"
+        ebay_cat_name = "Coins: World"
+
+    dynamic_id = (analysis_data.get("coin_id") if (analysis_data and analysis_data.get("coin_id") and analysis_data.get("coin_id") != "other") else None) or re.sub(r'[^a-z0-9]+', '_', raw_name.lower())[:40]
+
+    varieties = []
+    if analysis_data and isinstance(analysis_data.get("high_value_varieties_to_inspect"), list):
+        for v in analysis_data["high_value_varieties_to_inspect"]:
+            if isinstance(v, str):
+                varieties.append({
+                    "date_variety": v,
+                    "rarity_tier": "Variety to Inspect",
+                    "estimated_value": "Market Rate",
+                    "description": v
+                })
+            elif isinstance(v, dict):
+                varieties.append(v)
+
+    return {
+        "id": dynamic_id,
+        "name": raw_name,
+        "denomination": raw_denom,
+        "country": raw_country,
+        "years": raw_year,
+        "default_year": raw_year,
+        "composition": raw_comp,
+        "metal_type": metal_type,
+        "purity": purity,
+        "net_pure_metal_oz": net_oz,
+        "weight_grams": weight_grams,
+        "diameter_mm": diameter_mm,
+        "edge": "Standard",
+        "designer": "Official Mint Engraver",
+        "ebay_category_id": ebay_cat_id,
+        "ebay_category_name": ebay_cat_name,
+        "rarity_overview": (analysis_data.get("rarity_status") if analysis_data else "Numismatic collectibility varies by condition and date."),
+        "key_dates_and_varieties": varieties,
+        "grade_values": {},
+        "selling_tips": "Take sharp close-up photos of both sides and edges under balanced lighting."
+    }
 
 
 def generate_coin_report(
@@ -218,20 +353,45 @@ def generate_coin_report(
     Takes AI vision output (or manual selection/hint) and combines it
     with the numismatic database, melt calculations, key dates, and eBay listing tools.
     """
-    # 1. Determine base coin catalog entry
+    # 1. Determine base coin catalog entry or dynamic entry
+    coin_meta = None
     target_id = ""
+
     if analysis_data and analysis_data.get("coin_id") in COIN_CATALOG:
         target_id = analysis_data["coin_id"]
-    elif coin_hint:
+        coin_meta = COIN_CATALOG[target_id]
+    elif analysis_data and analysis_data.get("coin_id") and analysis_data.get("coin_id") != "other":
+        matched = find_matching_coin(analysis_data["coin_id"])
+        if matched:
+            target_id = matched["id"]
+            coin_meta = matched
+
+    if not coin_meta and analysis_data and analysis_data.get("coin_name"):
+        matched = find_matching_coin(analysis_data["coin_name"])
+        if matched:
+            target_id = matched["id"]
+            coin_meta = matched
+
+    if not coin_meta and coin_hint:
         matched = find_matching_coin(coin_hint)
         if matched:
             target_id = matched["id"]
+            coin_meta = matched
 
-    if not target_id or target_id not in COIN_CATALOG:
-        # Default fallback to Morgan Silver Dollar for rich demonstration
-        target_id = "morgan_dollar"
+    # If vision identifies a coin that is not in the hardcoded series list,
+    # dynamically generate a report for it rather than forcing morgan_dollar.
+    if not coin_meta and analysis_data:
+        coin_meta = create_dynamic_coin_meta(analysis_data, coin_hint)
+        target_id = coin_meta["id"]
 
-    coin_meta = COIN_CATALOG[target_id]
+    if not coin_meta:
+        if coin_hint:
+            coin_meta = create_dynamic_coin_meta({"coin_name": coin_hint}, coin_hint)
+            target_id = coin_meta["id"]
+        else:
+            # Baseline demo fallback for empty parameters
+            target_id = "morgan_dollar"
+            coin_meta = COIN_CATALOG[target_id]
 
     # Extract detected or provided attributes with authentic series-appropriate defaults
     default_year = get_default_year_for_coin(coin_meta)
@@ -243,7 +403,7 @@ def generate_coin_report(
     strike_type = (analysis_data.get("strike_type") if analysis_data and analysis_data.get("strike_type") else "Regular Business Strike")
 
     # 2. Melt value calculation using active/custom spot prices if provided
-    melt_info = calculate_melt_value(target_id, spot_prices=spot_prices)
+    melt_info = calculate_melt_value(coin_meta, spot_prices=spot_prices)
 
     # 3. Pricing ranges
     if analysis_data and "ebay_market_price_estimate" in analysis_data:
@@ -386,11 +546,11 @@ def generate_coin_report(
         "melt_value": melt_info,
         "grade_values_guide": coin_meta.get("grade_values", {}),
         "pricing_estimate": pricing,
-        "high_dollar_varieties": catalog_varieties,
+        "high_dollar_varieties": catalog_varieties if catalog_varieties else coin_meta.get("key_dates_and_varieties", []),
         "detected_varieties": detected_varieties,
         "selling_tips": coin_meta.get("selling_tips", ""),
         "ai_identified": bool(analysis_data),
-        "vision_model": "gemini-3.8-flash" if analysis_data else None,
+        "vision_model": (analysis_data.get("model_used") if analysis_data else None) or ("gemini-2.5-flash" if analysis_data else None),
         "ebay_listing": {
             "title": ebay_title,
             "category_id": coin_meta.get("ebay_category_id", ""),

@@ -107,6 +107,23 @@ def test_coin_engine_evaluates_in_node():
     const rep4 = engine.generateCoinReport({ coinHint: 'world_banknote_currency' });
     if (!rep4.success || !rep4.ebay_listing.title.includes('Banknote')) process.exit(6);
 
+    // Test Dynamic Uncataloged Coin (e.g. Standing Liberty Quarter identified by Vision)
+    const visionData = {
+      coin_name: 'Standing Liberty Quarter',
+      coin_id: 'standing_liberty_quarter',
+      denomination: '25 Cents',
+      year: '1917',
+      mint_mark: 'D',
+      country: 'United States',
+      estimated_grade: 'VF-20',
+      composition: '90% Silver 10% Copper',
+      ebay_market_price_estimate: { low: 75, average: 110, high: 175, recommended_buy_it_now: 125, starting_bid: 69.99 }
+    };
+    const repDynamic = engine.generateCoinReport({ analysisData: visionData });
+    if (!repDynamic.success || repDynamic.coin_name !== 'Standing Liberty Quarter') process.exit(7);
+    if (repDynamic.coin_id === 'morgan_dollar' || repDynamic.ebay_listing.title.includes('Morgan')) process.exit(8);
+    if (!repDynamic.melt_value.has_precious_metal) process.exit(9);
+
     console.log('SUCCESS');
     """
     res = subprocess.run(["node", "-e", script], cwd=BASE_DIR, capture_output=True, text=True)

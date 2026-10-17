@@ -242,3 +242,82 @@ def test_ancient_and_world_analyzer_reports():
     assert "Banknote" in note_rep["ebay_listing"]["title"]
     assert note_rep["ebay_listing"]["category_id"] == "3411"
 
+
+def test_dynamic_report_for_uncataloged_coin():
+    """Verify that if vision identifies a coin that is not in the hardcoded series list, it dynamically generates a report for it rather than forcing morgan_dollar."""
+    from coin_analyzer import generate_coin_report
+
+    vision_result = {
+        "coin_name": "Standing Liberty Quarter",
+        "coin_id": "standing_liberty_quarter",
+        "denomination": "25 Cents",
+        "year": "1917",
+        "mint_mark": "D",
+        "country": "United States",
+        "estimated_grade": "VF-20",
+        "strike_type": "Regular Business Strike",
+        "composition": "90% Silver 10% Copper",
+        "rarity_status": "Key Variety Type 1",
+        "high_value_varieties_to_inspect": [
+            "1917-D Type 1 Bare Breast vs Type 2 Webbed Mail"
+        ],
+        "ebay_market_price_estimate": {
+            "low": 75.0,
+            "average": 110.0,
+            "high": 175.0,
+            "recommended_buy_it_now": 125.0,
+            "starting_bid": 69.99
+        }
+    }
+
+    report = generate_coin_report(analysis_data=vision_result)
+    assert report["success"] is True
+    assert report["coin_name"] == "Standing Liberty Quarter"
+    assert report["year"] == "1917"
+    assert report["mint_mark"] == "D"
+    assert report["coin_id"] != "morgan_dollar"
+    assert "Standing Liberty Quarter" in report["ebay_listing"]["title"]
+    assert "Morgan" not in report["ebay_listing"]["title"]
+    assert report["melt_value"]["has_precious_metal"] is True
+    assert report["pricing_estimate"]["recommended_buy_it_now"] == 125.0
+    assert len(report["high_dollar_varieties"]) > 0
+    assert "Bare Breast" in report["high_dollar_varieties"][0]["date_variety"]
+
+
+def test_uncataloged_gold_and_bronze_coins():
+    """Verify uncataloged gold bullion and ancient bronze coins dynamically compute correct metal and category specs."""
+    from coin_analyzer import generate_coin_report
+
+    gold_coin = {
+        "coin_name": "French 20 Francs Gold Rooster",
+        "coin_id": "french_20_francs_gold",
+        "denomination": "20 Francs",
+        "year": "1907",
+        "country": "France",
+        "composition": ".900 Gold (0.1867 oz AGW)",
+        "estimated_grade": "MS-63"
+    }
+    gold_rep = generate_coin_report(analysis_data=gold_coin)
+    assert gold_rep["success"] is True
+    assert "Rooster" in gold_rep["coin_name"]
+    assert gold_rep["melt_value"]["has_precious_metal"] is True
+    assert gold_rep["melt_value"]["metal"] == "Gold"
+    assert gold_rep["ebay_listing"]["category_id"] == "256"  # World Coins
+
+    bronze_coin = {
+        "coin_name": "Alexander the Great Bronze Lepton",
+        "coin_id": "alexander_bronze_lepton",
+        "denomination": "Lepton",
+        "year": "-330",
+        "country": "Ancient Greece",
+        "composition": "Ancient Bronze Alloy",
+        "estimated_grade": "VF"
+    }
+    bronze_rep = generate_coin_report(analysis_data=bronze_coin)
+    assert bronze_rep["success"] is True
+    assert "330 BC" in bronze_rep["ebay_listing"]["title"]
+    assert bronze_rep["ebay_listing"]["category_id"] == "4733"  # Ancient Coins
+    assert bronze_rep["melt_value"]["has_precious_metal"] is False
+
+
+

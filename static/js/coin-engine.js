@@ -2053,7 +2053,7 @@
   // 7. Calculate precious metal melt/bullion value
   function calculateMeltValue(coinId, spotPrices) {
     const prices = Object.assign({}, DEFAULT_SPOT_PRICES, spotPrices || {});
-    const coin = COIN_CATALOG[coinId];
+    const coin = (coinId && typeof coinId === 'object') ? coinId : COIN_CATALOG[coinId];
     if (!coin) {
       return { has_precious_metal: false, melt_value_usd: 0.0, details: 'Unknown coin' };
     }
@@ -2178,14 +2178,6 @@
     for (const [coinId, data] of Object.entries(COIN_CATALOG)) {
       if (q.includes(data.name.toLowerCase())) return data;
     }
-
-    // 7. Fallback by denomination
-    if (q.includes('dollar')) return COIN_CATALOG.morgan_dollar;
-    if (q.includes('half')) return COIN_CATALOG.walking_liberty_half;
-    if (q.includes('quarter')) return COIN_CATALOG.washington_quarter;
-    if (q.includes('dime')) return COIN_CATALOG.mercury_dime;
-    if (q.includes('nickel')) return COIN_CATALOG.buffalo_nickel;
-    if (q.includes('penny') || q.includes('cent')) return COIN_CATALOG.lincoln_wheat_cent;
 
     return null;
   }
@@ -2457,6 +2449,157 @@ ${tags}`.trim();
 **Payment:** Zelle, Venmo, PayPal F&F, CashApp (no notes please)`.trim();
   }
 
+  // 14b. Dynamically construct coin metadata for unrecognized/custom coins identified by AI
+  function createDynamicCoinMeta(analysisData, coinHint) {
+    const rawName = (analysisData && analysisData.coin_name) || coinHint || 'Uncataloged Coin';
+    const rawDenom = (analysisData && analysisData.denomination) || 'Collectible Coin';
+    const rawCountry = (analysisData && analysisData.country) || 'World';
+    const rawYear = (analysisData && analysisData.year) ? String(analysisData.year) : 'Unknown';
+    const rawComp = (analysisData && analysisData.composition) || 'Standard Coin Metal';
+    const compLower = rawComp.toLowerCase();
+    const nameLower = rawName.toLowerCase();
+    const denomLower = rawDenom.toLowerCase();
+
+    let metalType = 'base';
+    let purity = 0.0;
+    let netOz = 0.0;
+    let weightGrams = 0.0;
+    let diameterMm = 0.0;
+
+    if (compLower.includes('gold') || nameLower.includes('gold')) {
+      metalType = 'gold';
+      if (compLower.includes('999') || compLower.includes('24k')) {
+        purity = 0.999;
+      } else if (compLower.includes('22k') || compLower.includes('91.67')) {
+        purity = 0.9167;
+      } else {
+        purity = 0.900;
+      }
+      if (nameLower.includes('1 oz') || denomLower.includes('1 oz') || compLower.includes('1 oz')) {
+        netOz = 1.0;
+        weightGrams = 31.1;
+      } else if (nameLower.includes('1/2 oz') || denomLower.includes('1/2 oz')) {
+        netOz = 0.5;
+        weightGrams = 15.55;
+      } else if (nameLower.includes('1/4 oz') || denomLower.includes('1/4 oz')) {
+        netOz = 0.25;
+        weightGrams = 7.78;
+      } else if (nameLower.includes('1/10 oz') || denomLower.includes('1/10 oz')) {
+        netOz = 0.1;
+        weightGrams = 3.11;
+      } else {
+        netOz = 0.25;
+        weightGrams = 7.78;
+      }
+    } else if (compLower.includes('silver') || nameLower.includes('silver')) {
+      metalType = 'silver';
+      if (compLower.includes('.999') || compLower.includes('fine silver') || compLower.includes('pure silver')) {
+        purity = 0.999;
+        netOz = 1.0;
+        weightGrams = 31.1;
+      } else if (compLower.includes('90%') || compLower.includes('.900')) {
+        purity = 0.900;
+        if (denomLower.includes('dollar') || nameLower.includes('dollar') || denomLower.includes('$1')) {
+          netOz = 0.7734;
+          weightGrams = 26.73;
+          diameterMm = 38.1;
+        } else if (denomLower.includes('half') || nameLower.includes('half') || denomLower.includes('50')) {
+          netOz = 0.3617;
+          weightGrams = 12.5;
+          diameterMm = 30.6;
+        } else if (denomLower.includes('quarter') || nameLower.includes('quarter') || denomLower.includes('25')) {
+          netOz = 0.1808;
+          weightGrams = 6.25;
+          diameterMm = 24.3;
+        } else if (denomLower.includes('dime') || nameLower.includes('dime') || denomLower.includes('10')) {
+          netOz = 0.0723;
+          weightGrams = 2.5;
+          diameterMm = 17.9;
+        } else {
+          netOz = 0.1808;
+          weightGrams = 6.25;
+          diameterMm = 24.3;
+        }
+      } else if (compLower.includes('40%') || compLower.includes('.400')) {
+        purity = 0.400;
+        netOz = 0.1479;
+        weightGrams = 11.5;
+        diameterMm = 30.6;
+      } else {
+        purity = 0.900;
+        netOz = 0.1808;
+        weightGrams = 6.25;
+        diameterMm = 24.3;
+      }
+    } else if (compLower.includes('paper') || compLower.includes('banknote') || compLower.includes('polymer')) {
+      metalType = 'paper';
+    } else if (compLower.includes('bronze')) {
+      metalType = 'bronze';
+    } else if (compLower.includes('copper')) {
+      metalType = 'copper';
+    }
+
+    let ebayCatId = '11116';
+    let ebayCatName = 'Coins & Paper Money';
+    const cLower = rawCountry.toLowerCase();
+    if (cLower.includes('united states') || cLower.includes('usa') || cLower.includes('u.s.')) {
+      ebayCatId = '253';
+      ebayCatName = 'Coins: US';
+    } else if (cLower.includes('rome') || cLower.includes('greece') || cLower.includes('ancient') || cLower.includes('byzantine')) {
+      ebayCatId = '4733';
+      ebayCatName = 'Coins: Ancient';
+    } else if (metalType === 'paper') {
+      ebayCatId = '3411';
+      ebayCatName = 'Paper Money: World';
+    } else {
+      ebayCatId = '256';
+      ebayCatName = 'Coins: World';
+    }
+
+    const dynamicId = (analysisData && analysisData.coin_id && analysisData.coin_id !== 'other')
+      ? analysisData.coin_id
+      : rawName.toLowerCase().replace(/[^a-z0-9]+/g, '_').slice(0, 40);
+
+    const varieties = [];
+    if (analysisData && Array.isArray(analysisData.high_value_varieties_to_inspect)) {
+      analysisData.high_value_varieties_to_inspect.forEach(v => {
+        if (typeof v === 'string') {
+          varieties.push({
+            date_variety: v,
+            rarity_tier: 'Variety to Inspect',
+            estimated_value: 'Market Rate',
+            description: v
+          });
+        } else if (v && typeof v === 'object') {
+          varieties.push(v);
+        }
+      });
+    }
+
+    return {
+      id: dynamicId,
+      name: rawName,
+      denomination: rawDenom,
+      country: rawCountry,
+      years: rawYear,
+      default_year: rawYear,
+      composition: rawComp,
+      metal_type: metalType,
+      purity: purity,
+      net_pure_metal_oz: netOz,
+      weight_grams: weightGrams,
+      diameter_mm: diameterMm,
+      edge: 'Standard',
+      designer: 'Official Mint Engraver',
+      ebay_category_id: ebayCatId,
+      ebay_category_name: ebayCatName,
+      rarity_overview: (analysisData && analysisData.rarity_status) || 'Numismatic collectibility varies by condition and date.',
+      key_dates_and_varieties: varieties,
+      grade_values: {},
+      selling_tips: 'Take sharp close-up photos of both sides and edges under balanced lighting.'
+    };
+  }
+
   // 15. Complete coin report builder (runs 100% client side)
   function generateCoinReport(opts) {
     opts = opts || {};
@@ -2468,19 +2611,54 @@ ${tags}`.trim();
     const reverseUrl = opts.reverseUrl || '';
     const spotPrices = opts.spotPrices || null;
 
+    let coinMeta = null;
     let targetId = '';
+
     if (analysisData && analysisData.coin_id && COIN_CATALOG[analysisData.coin_id]) {
       targetId = analysisData.coin_id;
-    } else if (coinHint) {
+      coinMeta = COIN_CATALOG[targetId];
+    } else if (analysisData && analysisData.coin_id && analysisData.coin_id !== 'other') {
+      const matched = findMatchingCoin(analysisData.coin_id);
+      if (matched) {
+        targetId = matched.id;
+        coinMeta = matched;
+      }
+    }
+
+    if (!coinMeta && analysisData && analysisData.coin_name) {
+      const matched = findMatchingCoin(analysisData.coin_name);
+      if (matched) {
+        targetId = matched.id;
+        coinMeta = matched;
+      }
+    }
+
+    if (!coinMeta && coinHint) {
       const matched = findMatchingCoin(coinHint);
-      if (matched) targetId = matched.id;
+      if (matched) {
+        targetId = matched.id;
+        coinMeta = matched;
+      }
     }
 
-    if (!targetId || !COIN_CATALOG[targetId]) {
-      targetId = 'morgan_dollar';
+    // If analysisData is present but coin is not in the hardcoded series list,
+    // dynamically generate a report for it rather than forcing morgan_dollar.
+    if (!coinMeta && analysisData) {
+      coinMeta = createDynamicCoinMeta(analysisData, coinHint);
+      targetId = coinMeta.id;
     }
 
-    const coinMeta = COIN_CATALOG[targetId];
+    // Fallback: If neither analysisData nor matched coinHint was found
+    if (!coinMeta) {
+      if (coinHint) {
+        coinMeta = createDynamicCoinMeta({ coin_name: coinHint }, coinHint);
+        targetId = coinMeta.id;
+      } else {
+        targetId = 'morgan_dollar';
+        coinMeta = COIN_CATALOG[targetId];
+      }
+    }
+
     const defaultYear = getDefaultYearForCoin(coinMeta);
     const year = yearHint || (analysisData && analysisData.year ? String(analysisData.year) : defaultYear);
     const rawMint = mintHint || (analysisData && analysisData.mint_mark ? analysisData.mint_mark : 'None');
@@ -2489,10 +2667,10 @@ ${tags}`.trim();
     const estimatedGrade = (analysisData && analysisData.estimated_grade) ? analysisData.estimated_grade : 'AU-58 (About Uncirculated)';
     const strikeType = (analysisData && analysisData.strike_type) ? analysisData.strike_type : 'Regular Business Strike';
 
-    const meltInfo = calculateMeltValue(targetId, spotPrices);
+    const meltInfo = calculateMeltValue(coinMeta, spotPrices);
 
     let pricing;
-    if (analysisData && analysisData.ebay_market_price_estimate) {
+    if (analysisData && analysisData.ebay_market_price_estimate && typeof analysisData.ebay_market_price_estimate.average === 'number') {
       pricing = analysisData.ebay_market_price_estimate;
     } else {
       const hasSilver = coinMeta.metal_type === 'silver';
@@ -2597,7 +2775,11 @@ ${tags}`.trim();
       melt_value: meltInfo,
       grade_values_guide: coinMeta.grade_values || {},
       pricing_estimate: pricing,
-      high_dollar_varieties: catalogVarieties,
+      high_dollar_varieties: (catalogVarieties && catalogVarieties.length > 0)
+        ? catalogVarieties
+        : ((analysisData && Array.isArray(analysisData.high_value_varieties_to_inspect))
+          ? analysisData.high_value_varieties_to_inspect.map(v => (typeof v === 'string' ? { date_variety: v, rarity_tier: 'Variety to Inspect', estimated_value: 'Market Rate', description: v } : v))
+          : []),
       detected_varieties: detectedVarieties,
       selling_tips: coinMeta.selling_tips || '',
       ai_identified: Boolean(analysisData),
@@ -2693,7 +2875,19 @@ ${tags}`.trim();
           cleaned = cleaned.replace(/^```\s*/, '').replace(/\s*```$/, '');
         }
 
-        const parsed = JSON.parse(cleaned);
+        let parsed;
+        try {
+          parsed = JSON.parse(cleaned);
+        } catch (jsonErr) {
+          const firstBrace = cleaned.indexOf('{');
+          const lastBrace = cleaned.lastIndexOf('}');
+          if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
+            parsed = JSON.parse(cleaned.slice(firstBrace, lastBrace + 1));
+          } else {
+            throw jsonErr;
+          }
+        }
+
         parsed.model_used = model;
         return parsed;
       } catch (err) {

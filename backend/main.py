@@ -310,6 +310,13 @@ def identify_coin():
             api_key=gemini_key
         )
 
+    if not analysis_data and not coin_hint:
+        return jsonify({
+            "success": False,
+            "error": "AI Vision requires a Gemini API key or coin series selection. Please enter a Gemini API key in Settings (⚙️) or select your coin series from the dropdown.",
+            "needs_api_key": True
+        }), 400
+
     # Save images to local static files to avoid huge payloads and enable clean eBay URLs
     saved_obverse = save_data_url_as_image(obverse_image, prefix="obverse") if obverse_image else ""
     saved_reverse = save_data_url_as_image(reverse_image, prefix="reverse") if reverse_image else ""

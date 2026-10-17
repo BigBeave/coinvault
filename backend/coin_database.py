@@ -1762,10 +1762,15 @@ COIN_CATALOG: Dict[str, Dict[str, Any]] = {
 }
 
 
-def calculate_melt_value(coin_id: str, spot_prices: Optional[Dict[str, float]] = None) -> Dict[str, Any]:
+def calculate_melt_value(coin_id_or_meta: Union[str, Dict[str, Any]], spot_prices: Optional[Dict[str, float]] = None) -> Dict[str, Any]:
     """Calculate current precious metal melt/bullion value for a coin."""
     prices = spot_prices or DEFAULT_SPOT_PRICES
-    coin = COIN_CATALOG.get(coin_id)
+    if isinstance(coin_id_or_meta, dict):
+        coin = coin_id_or_meta
+    elif isinstance(coin_id_or_meta, str):
+        coin = COIN_CATALOG.get(coin_id_or_meta)
+    else:
+        coin = None
     if not coin:
         return {"has_precious_metal": False, "melt_value_usd": 0.0, "details": "Unknown coin"}
 
@@ -1918,18 +1923,5 @@ def find_matching_coin(query: str) -> Optional[Dict[str, Any]]:
         if data["name"].lower() in q:
             return data
 
-    # 7. Fallback by denomination
-    if "dollar" in q:
-        return COIN_CATALOG["morgan_dollar"]
-    if "half" in q:
-        return COIN_CATALOG["walking_liberty_half"]
-    if "quarter" in q:
-        return COIN_CATALOG["washington_quarter"]
-    if "dime" in q:
-        return COIN_CATALOG["mercury_dime"]
-    if "nickel" in q:
-        return COIN_CATALOG["buffalo_nickel"]
-    if "penny" in q or "cent" in q:
-        return COIN_CATALOG["lincoln_wheat_cent"]
     return None
 
