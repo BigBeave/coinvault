@@ -63,4 +63,5 @@ TESTING
 -------
 Run automated unit and integration tests with:
 python -m pytest
-All 47 tests passing cleanly.
+All 50 tests passing cleanly (100% test pass rate across all test modules).
+

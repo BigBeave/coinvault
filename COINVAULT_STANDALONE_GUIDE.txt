@@ -117,31 +117,23 @@ HOW TO ACTIVATE STANDALONE MODE ON IPHONE:
 
 
 --------------------------------------------------------------------------------
-3. FREE GITHUB PAGES HOSTING (100% FREE FOREVER, ZERO PC)
+3. LIVE GITHUB PAGES HOSTING (100% FREE FOREVER, ZERO PC)
 --------------------------------------------------------------------------------
 CoinVault is designed with GitHub Pages compatibility out-of-the-box. Root-level
 index.html, manifest.json, service-worker.js, and static/ directories allow the
 entire PWA to be hosted as a static web app.
 
-STEP-BY-STEP GITHUB PAGES SETUP:
-1. Create a new repository on GitHub (e.g. named "coinvault").
-2. Push your project to GitHub:
-   git remote add origin https://github.com/<your-username>/coinvault.git
-   git branch -M main
-   git push -u origin main
+LIVE DEPLOYMENT STATUS:
+• GitHub Repository: https://github.com/BigBeave/coinvault
+• Live GitHub Pages App: https://bigbeave.github.io/coinvault/
+• Branch: main (Folder: / root)
+• Status: Enabled and building / active 24/7
 
-3. Enable GitHub Pages:
-   - On GitHub, click "Settings" (gear icon) -> "Pages" (in left sidebar).
-   - Under "Build and deployment" -> "Source", select "Deploy from a branch".
-   - Under "Branch", select "main" and "/ (root)".
-   - Click "Save".
-
-4. Access on iPhone:
-   - Within 1-2 minutes, GitHub will publish your site at:
-     https://<your-username>.github.io/coinvault/
-   - Open that URL in Safari on your iPhone.
-   - Enter your Gemini API key in Settings (⚙️) once.
-   - You now have a permanent, free, 24/7 coin identifying app on your phone!
+ACCESS & SETUP ON IPHONE:
+1. Open https://bigbeave.github.io/coinvault/ in Safari on your iPhone.
+2. Tap Settings (⚙️) and enter your free Gemini API key from aistudio.google.com once.
+3. Tap the Safari Share button -> "Add to Home Screen".
+4. You now have a permanent, free, 24/7 coin identifying app on your phone!
 
 
 --------------------------------------------------------------------------------
