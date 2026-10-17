@@ -1,0 +1,178 @@
+================================================================================
+COINVAULT — iPHONE STANDALONE, ANCIENT & WORLD COINS, & GITHUB PAGES GUIDE
+================================================================================
+
+OVERVIEW
+--------
+CoinVault is a mobile-first iOS numismatic identifier and multi-platform selling
+listing generator (eBay, Mercari, Whatnot, Reddit).
+
+It runs 100% standalone inside iOS Safari / PWA on your iPhone with zero PC or
+local server required, and can be hosted completely free on GitHub Pages.
+
+This guide covers:
+1. The Expanded 32-Series Global Database (Ancient Coins, World Bullion, Banknotes).
+2. Standalone On-Device PWA Mode (Zero PC Required).
+3. GitHub & GitHub Pages Free Hosting Setup.
+4. Other 1-Click Free Cloud Hosting Options (Render, Vercel).
+5. Installing on iPhone Home Screen as a Native Web App.
+
+
+--------------------------------------------------------------------------------
+1. EXPANDED 32-SERIES NUMISMATIC & CURRENCY DATABASE
+--------------------------------------------------------------------------------
+CoinVault now includes 32 comprehensive series across 4 major numismatic categories:
+
+A. CLASSIC US COINAGE (14 Series)
+   • Morgan Silver Dollar (1878-1921)
+   • Peace Silver Dollar (1921-1935)
+   • Walking Liberty Half Dollar (1916-1947)
+   • Franklin Half Dollar (1948-1963)
+   • Kennedy Half Dollar (1964-Present)
+   • Washington Quarter (1932-1998)
+   • Mercury Winged Liberty Dime (1916-1945)
+   • Roosevelt Dime (1946-Present)
+   • Buffalo / Indian Head Nickel (1913-1938)
+   • Jefferson Nickel (1938-Present)
+   • Lincoln Wheat Cent (1909-1958)
+   • Lincoln Memorial Cent (1959-2008)
+   • American Silver Eagle 1 oz Bullion (1986-Present)
+   • Saint-Gaudens $20 Double Eagle Gold (1907-1933)
+
+B. ANCIENT COINAGE (7 Series)
+   • Roman Empire Silver Denarius (approx. 211 BC - 244 AD)
+     - Silver AR, ~3.9g, featuring Julius Caesar, Augustus, Trajan, Marcus Aurelius
+   • Roman Empire Gold Aureus (approx. 1st c. BC - 4th c. AD)
+     - Pure Gold AV, ~7.3g, imperial portraits and triumphal reverses
+   • Roman Empire Bronze Sestertius (approx. 27 BC - 3rd c. AD)
+     - Large Orichalcum/Bronze AE, ~27g, high relief imperial portraits
+   • Ancient Greece Athenian Owl Tetradrachm (approx. 510 BC - 38 BC)
+     - Silver AR, ~17.2g, Helmeted Athena / Owl with olive spray and crescent AOE
+   • Byzantine Empire Gold Solidus (approx. 491 AD - 1453 AD)
+     - Pure Gold AV, ~4.5g, Justinian, Heraclius, and Christ Pantokrator reverses
+   • Judean Bronze Prutah - Widow's Mite (approx. 103 BC - 70 AD)
+     - Biblical Bronze AE, ~1.5g, Alexander Jannaeus, Pontius Pilate, First Jewish Revolt
+   • Phoenician Shekel of Tyre (approx. 126 BC - 65 AD)
+     - Silver AR, ~14.2g, Melqart / Eagle on prow, Biblical "30 pieces of silver"
+
+C. WORLD COINS & BULLION (10 Series)
+   • British Gold Sovereign (1817-Present) - 0.2354 oz Pure Gold, St. George & Dragon
+   • British Silver Britannia 1 oz (1997-Present) - 1.000 oz Pure Silver
+   • Mexican Silver Libertad 1 oz (1982-Present) - 1.000 oz Pure Silver, Winged Victory
+   • Mexican 50 Pesos Centenario Gold (1921-1947) - 1.2057 oz Pure Gold
+   • Canadian Silver Maple Leaf 1 oz (1988-Present) - .9999 Pure Silver, Radial Security
+   • Canadian Gold Maple Leaf 1 oz (1979-Present) - .9999 Pure Gold
+   • South African Krugerrand 1 oz Gold (1967-Present) - 1.000 oz Pure Gold (22K)
+   • Chinese Silver Panda 30g / 1 oz (1983-Present) - Pure Silver, Hall of Prayer
+   • Austrian Silver Philharmonic 1 oz (2008-Present) - .999 Pure Silver, Great Organ
+   • Australian Kangaroo & Kookaburra Silver 1 oz (1990-Present) - Pure Silver
+
+D. WORLD PAPER CURRENCY & BANKNOTES (1 Series)
+   • World Paper Currency, Banknotes & Obsolete Paper
+     - US Silver Certificates, Red Seal Legal Tender, Gold Certificates, Fractional,
+       Confederate notes, World Paper Money (Bank of England, Banco de Mexico, etc.)
+
+E. 10 PRE-LOADED INSTANT DEMO COINS
+   Tap any sample button to immediately populate photo reticles, identify the piece,
+   calculate melt value, display high-dollar varieties, and generate full listings:
+   1. 1921 Morgan Silver Dollar
+   2. 1943 Walking Liberty Half Dollar
+   3. 1955 Lincoln Wheat Cent (DDO Variety)
+   4. 1986 American Silver Eagle
+   5. 1924 Saint-Gaudens Double Eagle Gold
+   6. 440 BC Ancient Athenian Owl Tetradrachm
+   7. 44 BC Roman Julius Caesar Silver Denarius
+   8. 1982 Mexican Libertad 1 oz Silver
+   9. 1911 British Sovereign Gold (King George V)
+   10. 1899 $5 Silver Certificate "Chief Black Hawk"
+
+
+--------------------------------------------------------------------------------
+2. STANDALONE ON-DEVICE MODE (ZERO PC REQUIRED)
+--------------------------------------------------------------------------------
+CoinVault contains a complete client-side numismatic JavaScript engine
+(static/js/coin-engine.js) that runs 100% inside your mobile browser:
+
+• Direct Mobile Gemini Vision AI:
+  Add your free Google Gemini API key in Settings (⚙️). iOS Safari sends photos
+  directly to Google Gemini Cloud over HTTPS. Your PC is never involved!
+
+• Instant Local Catalog & Bullion Engine:
+  All 32 series specs, spot price calculations, melt values (including 0.00 melt
+  for paper currency and ancient bronze), and varieties run in-memory on the phone.
+
+• Tailored Multi-Platform Listings:
+  - eBay: Enforces strict 80-character title limit with smart category tags
+    ("Ancient Coin", "World Coin", "Banknote", "Old US Coin"), responsive HTML
+    description, and direct pre-fill listing link.
+  - Mercari: Category-matched tags and pricing.
+  - Whatnot: Sudden death auction notes and livestream starting bids.
+  - Reddit: Markdown table with verification photo instructions.
+
+HOW TO ACTIVATE STANDALONE MODE ON IPHONE:
+1. Tap the "⚙️" Settings button in the top right header.
+2. Under "Operation Mode", select: "⚡ Standalone iPhone Mode (No PC Server Needed)".
+3. Paste your free Gemini API key from https://aistudio.google.com.
+4. Tap "Save Settings". The header badge will indicate "⚡ Standalone".
+
+
+--------------------------------------------------------------------------------
+3. FREE GITHUB PAGES HOSTING (100% FREE FOREVER, ZERO PC)
+--------------------------------------------------------------------------------
+CoinVault is designed with GitHub Pages compatibility out-of-the-box. Root-level
+index.html, manifest.json, service-worker.js, and static/ directories allow the
+entire PWA to be hosted as a static web app.
+
+STEP-BY-STEP GITHUB PAGES SETUP:
+1. Create a new repository on GitHub (e.g. named "coinvault").
+2. Push your project to GitHub:
+   git remote add origin https://github.com/<your-username>/coinvault.git
+   git branch -M main
+   git push -u origin main
+
+3. Enable GitHub Pages:
+   - On GitHub, click "Settings" (gear icon) -> "Pages" (in left sidebar).
+   - Under "Build and deployment" -> "Source", select "Deploy from a branch".
+   - Under "Branch", select "main" and "/ (root)".
+   - Click "Save".
+
+4. Access on iPhone:
+   - Within 1-2 minutes, GitHub will publish your site at:
+     https://<your-username>.github.io/coinvault/
+   - Open that URL in Safari on your iPhone.
+   - Enter your Gemini API key in Settings (⚙️) once.
+   - You now have a permanent, free, 24/7 coin identifying app on your phone!
+
+
+--------------------------------------------------------------------------------
+4. OTHER FREE 1-CLICK CLOUD HOSTING OPTIONS
+--------------------------------------------------------------------------------
+If you prefer running the full Python backend with backend API proxying:
+
+OPTION A: Render.com (Free Python Web Service)
+- Pre-configured: render.yaml & requirements.txt
+- Steps:
+  1. Sign in to https://render.com with GitHub.
+  2. Click "New +" -> "Blueprint" and connect your coinvault repository.
+  3. Render builds and launches your live Python web service automatically.
+
+OPTION B: Vercel
+- Pre-configured: vercel.json
+- Steps:
+  1. Sign in to https://vercel.com.
+  2. Click "Add New" -> "Project" and import your repository.
+
+
+--------------------------------------------------------------------------------
+5. ADD TO IPHONE HOME SCREEN AS NATIVE APP
+--------------------------------------------------------------------------------
+1. Open CoinVault in Safari on your iPhone (either your GitHub Pages URL or Cloud URL).
+2. Tap the Share icon (square with upward arrow) at the bottom toolbar.
+3. Scroll down and tap "Add to Home Screen".
+4. Tap "Add" in the top right corner.
+
+Outcome:
+CoinVault now appears on your home screen with its custom gold coin icon.
+It opens in full-screen native app mode (without Safari URL bars or browser controls)
+and caches all resources for instant launch anywhere.
+================================================================================

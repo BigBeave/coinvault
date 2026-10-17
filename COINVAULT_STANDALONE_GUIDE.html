@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CoinVault Standalone & Cloud Guide</title>
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --card-bg: #131b2e;
+      --border: #24304f;
+      --gold: #d4af37;
+      --gold-light: #f3e5ab;
+      --text: #e2e8f0;
+      --text-muted: #94a3b8;
+      --accent: #38bdf8;
+      --success: #10b981;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      margin: 0;
+      padding: 24px;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    header {
+      text-align: center;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 32px;
+    }
+    h1 {
+      color: var(--gold);
+      font-size: 2rem;
+      margin: 0 0 8px 0;
+    }
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      margin: 0;
+    }
+    .badge {
+      display: inline-block;
+      padding: 4px 12px;
+      background: rgba(212, 175, 55, 0.15);
+      border: 1px solid var(--gold);
+      border-radius: 9999px;
+      color: var(--gold-light);
+      font-weight: 600;
+      font-size: 0.85rem;
+      margin-top: 12px;
+    }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+    h2 {
+      color: var(--gold-light);
+      font-size: 1.35rem;
+      margin-top: 0;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    h3 {
+      color: var(--accent);
+      font-size: 1.1rem;
+      margin-top: 20px;
+      margin-bottom: 8px;
+    }
+    ul, ol {
+      margin: 8px 0 16px 24px;
+      padding: 0;
+    }
+    li {
+      margin-bottom: 6px;
+    }
+    code {
+      background: #1e293b;
+      color: #38bdf8;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: Consolas, Monaco, monospace;
+      font-size: 0.9em;
+    }
+    pre {
+      background: #0f172a;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px;
+      overflow-x: auto;
+      font-family: Consolas, Monaco, monospace;
+      font-size: 0.9em;
+      color: #f8fafc;
+    }
+    .highlight-box {
+      background: rgba(16, 185, 129, 0.1);
+      border-left: 4px solid var(--success);
+      padding: 14px 18px;
+      border-radius: 0 8px 8px 0;
+      margin: 16px 0;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    @media (max-width: 768px) {
+      .grid-2 { grid-template-columns: 1fr; }
+      body { padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>CoinVault Guide</h1>
+      <p class="subtitle">iPhone Standalone Numismatics, 32-Series Global Database & GitHub Pages Setup</p>
+      <div class="badge">Zero-PC Architecture • Zero PC Required • 100% Free Static Hosting</div>
+    </header>
+
+    <div class="card">
+      <h2>🏛️ Expanded 32-Series Database</h2>
+      <p>CoinVault now provides comprehensive coverage across 4 primary numismatic categories:</p>
+
+      <div class="grid-2">
+        <div>
+          <h3>1. Classic US Coinage (14 Series)</h3>
+          <ul>
+            <li>Morgan Silver Dollar (1878-1921)</li>
+            <li>Peace Silver Dollar (1921-1935)</li>
+            <li>Walking Liberty Half Dollar (1916-1947)</li>
+            <li>Franklin Half Dollar (1948-1963)</li>
+            <li>Kennedy Half Dollar (1964-Present)</li>
+            <li>Washington Quarter (1932-1998)</li>
+            <li>Mercury Winged Liberty Dime (1916-1945)</li>
+            <li>Roosevelt Dime (1946-Present)</li>
+            <li>Buffalo / Indian Head Nickel (1913-1938)</li>
+            <li>Jefferson Nickel (1938-Present)</li>
+            <li>Lincoln Wheat Cent (1909-1958)</li>
+            <li>Lincoln Memorial Cent (1959-2008)</li>
+            <li>American Silver Eagle (1986-Present)</li>
+            <li>Saint-Gaudens $20 Double Eagle (1907-1933)</li>
+          </ul>
+
+          <h3>2. World Paper Currency & Banknotes</h3>
+          <ul>
+            <li>US Silver & Gold Certificates</li>
+            <li>Red Seal Legal Tender Notes</li>
+            <li>Obsolete & Confederate Currency</li>
+            <li>World Paper Money (British, Mexican, etc.)</li>
+          </ul>
+        </div>
+
+        <div>
+          <h3>3. Ancient Coins (7 Series)</h3>
+          <ul>
+            <li><strong>Roman Empire Silver Denarius</strong> (Caesar, Augustus, Trajan)</li>
+            <li><strong>Roman Empire Gold Aureus</strong> (Imperial Portraits)</li>
+            <li><strong>Roman Empire Bronze Sestertius</strong> (Large AE)</li>
+            <li><strong>Athenian Owl Tetradrachm</strong> (Athena / Owl AOE)</li>
+            <li><strong>Byzantine Empire Gold Solidus</strong> (Justinian, Heraclius)</li>
+            <li><strong>Judean Bronze Widow's Mite</strong> (Biblical Prutah)</li>
+            <li><strong>Phoenician Shekel of Tyre</strong> (Melqart / Eagle)</li>
+          </ul>
+
+          <h3>4. World Coins & Bullion (10 Series)</h3>
+          <ul>
+            <li><strong>British Gold Sovereign</strong> (St. George & Dragon)</li>
+            <li><strong>British Silver Britannia</strong> (1 oz Pure Silver)</li>
+            <li><strong>Mexican Silver Libertad</strong> (Winged Victory)</li>
+            <li><strong>Mexican 50 Pesos Centenario</strong> (1.2057 oz Gold)</li>
+            <li><strong>Canadian Silver & Gold Maple Leaf</strong> (.9999 Pure)</li>
+            <li><strong>South African Krugerrand</strong> (1 oz Gold)</li>
+            <li><strong>Chinese Silver Panda</strong> (Hall of Prayer)</li>
+            <li><strong>Austrian Silver Philharmonic</strong> (Great Organ)</li>
+            <li><strong>Australian Kangaroo & Kookaburra</strong> (Pure Silver)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>🚀 Free GitHub Pages Deployment (Zero Server Cost)</h2>
+      <p>Because CoinVault features a complete client-side JavaScript engine (<code>static/js/coin-engine.js</code>), it can be hosted completely free on GitHub Pages forever:</p>
+      <ol>
+        <li>Create a repository on GitHub (e.g., <code>coinvault</code>).</li>
+        <li>Push your code to GitHub:
+          <pre>git remote add origin https://github.com/&lt;your-username&gt;/coinvault.git
+git branch -M main
+git push -u origin main</pre>
+        </li>
+        <li>In your repository, click <strong>Settings</strong> &gt; <strong>Pages</strong>.</li>
+        <li>Under <strong>Build and deployment</strong>, set Source to <strong>Deploy from a branch</strong>, choose <strong>main</strong> branch and <strong>/ (root)</strong> folder.</li>
+        <li>Click <strong>Save</strong>. In about 60 seconds, your site will be live at:
+          <pre>https://&lt;your-username&gt;.github.io/coinvault/</pre>
+        </li>
+      </ol>
+      <div class="highlight-box">
+        <strong>Direct Mobile Gemini Vision:</strong> On your iPhone, open the app, tap ⚙️ Settings, select "⚡ Standalone iPhone Mode", and paste your free Google Gemini API key from AI Studio. Photos will be analyzed directly from your phone with no PC required!
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>📱 Installing on iPhone Home Screen</h2>
+      <ol>
+        <li>Open your GitHub Pages URL in <strong>Safari</strong> on your iPhone.</li>
+        <li>Tap the <strong>Share</strong> button (square with arrow pointing up).</li>
+        <li>Scroll down and tap <strong>Add to Home Screen</strong>.</li>
+        <li>Tap <strong>Add</strong> in the top right corner.</li>
+      </ol>
+      <p>CoinVault will now run as a full-screen, native-feeling app with custom icons and offline caching.</p>
+    </div>
+
+    <div class="card">
+      <h2>🏷️ Multi-Platform Selling Generators</h2>
+      <ul>
+        <li><strong>eBay:</strong> Strict 80-character titles with smart category tags (<code>Ancient Coin</code>, <code>World Coin</code>, <code>Banknote</code>, <code>Old US Coin</code>), responsive HTML descriptions, and 1-tap pre-fill URLs.</li>
+        <li><strong>Mercari:</strong> Formatted item descriptions, category tags, and recommended pricing.</li>
+        <li><strong>Whatnot:</strong> Sudden-death livestream auction cards with starting bids and grade notes.</li>
+        <li><strong>Reddit:</strong> Formatted Markdown [WTS] listings for r/CoinSales and r/Pmsforsale.</li>
+      </ul>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,66 @@
+================================================================================
+COINVAULT — iOS NUMISMATIC AI & MULTI-PLATFORM SELLING SUITE GUIDE
+================================================================================
+
+OVERVIEW
+--------
+CoinVault is a mobile-first iOS platform (PWA) designed for coin collectors,
+dealers, and online resellers. It allows you to:
+1. Use your iPhone camera or camera roll to take and load photos of coins.
+2. Accurately identify coin series, year, mint mark, composition, melt value,
+   rarity, and market prices across grades.
+3. Automatically highlight high-dollar varieties, key dates, and mint errors
+   (e.g., 1955 Doubled Die, 1937-D 3-Legged Buffalo, 1893-S Morgan, 1982 No-P Dime)
+   that bring the most money online.
+4. Hit "Make Listing" to instantly generate selling listings with photos across
+   multiple platforms:
+   - eBay: SEO titles (<= 80 chars), categories, responsive HTML descriptions,
+     pre-filled deep links, and eBay Inventory API draft payloads.
+   - Mercari: Optimized title, pricing, coin specs, hashtags (#silver, #coins).
+   - Whatnot: Fast livestream auction cards with starting bids and sudden death notes.
+   - Reddit r/CoinSales & r/Pmsforsale: Formatted Markdown [WTS] sale posts.
+
+RUNNING WITHOUT YOUR PC (STANDALONE & CLOUD MODES)
+-------------------------------------------------
+You can run CoinVault completely without your PC involved, powered on, or connected:
+
+1. STANDALONE ON-DEVICE MODE:
+   - CoinVault bundles the entire numismatic database, bullion melt formulas,
+     high-dollar varieties, and listing engine directly in static/js/coin-engine.js.
+   - It runs 100% inside iOS Safari / PWA even when your computer is shut down.
+   - Connect your free Google Gemini API key in Settings (⚙️) to perform direct
+     AI vision recognition from iPhone Safari to Google Cloud.
+
+2. FREE 1-CLICK CLOUD DEPLOYMENT:
+   - Render (Free Web Service): Uses render.yaml & requirements.txt for a live HTTPS URL.
+   - GitHub Pages (100% Free Forever): Hosts the static client PWA with zero servers.
+   - Vercel (1-Click): Uses vercel.json for instantaneous global CDN hosting.
+   - Railway / Docker: Uses railway.json, Procfile, and Dockerfile.
+   (See COINVAULT_STANDALONE_GUIDE.html or COINVAULT_STANDALONE_GUIDE.txt for full walkthroughs).
+
+3. LOCAL PC WI-FI MODE (OPTIONAL):
+   - python run_server.py
+   - Navigate to http://<YOUR_COMPUTER_IP>:8000 on your iPhone Safari.
+
+INSTALLING AS NATIVE iOS APP
+----------------------------
+1. In Safari on your iPhone, tap the Share icon (square with upward arrow).
+2. Tap "Add to Home Screen" and tap "Add".
+3. CoinVault is now installed with a native app icon, offline caching, and full-screen UI!
+
+KEY FEATURES
+------------
+- Dual Photo Capture with Circular Reticle & Real-Time Front/Back Slots.
+- Direct Photo Download: 1-tap "Save Photos" downloads photos to iPhone Camera Roll.
+- Instant 1-Tap Demo: 10 pre-loaded sample coins (US, Ancients, World Bullion, Banknotes).
+- 32-Series Database: US Classic, Ancient Roman & Greek, World Bullion, Banknotes.
+- Material Composition & Bullion Calculator: Computes live melt values from spot prices.
+- High-Value Dates & Varieties: Full database of rarest varieties with $100,000+ estimates.
+- Multi-Platform 1-Click Listing Engine: eBay (with <= 80 char title counter and web prelist deep link), Mercari, Whatnot, and Reddit.
+- Settings Modal (⚙️): Switch between Standalone and Server mode, customize spot prices, and save Gemini API key.
+
+TESTING
+-------
+Run automated unit and integration tests with:
+python -m pytest
+All 47 tests passing cleanly.

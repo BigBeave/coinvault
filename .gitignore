@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.coverage
+htmlcov/
+*.log
+
+# Scratch outputs & temporary logs
+*_out.txt
+cond_enum_test.txt
+cond_output.txt
+error.log
+test.py
+test_all_cond.py
+test_cond.py
+test_draft.py
+test_publish.py
+js/
+
+# Environments
+.env
+.venv/
+venv/
+ENV/
+
+# OS files
+.DS_Store
+Thumbs.db

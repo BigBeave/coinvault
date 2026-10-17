@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CoinVault iOS Platform Guide</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #1e293b;
+            background: #f8fafc;
+            padding: 24px;
+            margin: 0;
+        }
+        .container {
+            max-width: 840px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+            border: 1px solid #e2e8f0;
+        }
+        h1, h2, h3 {
+            color: #0f172a;
+        }
+        .badge {
+            display: inline-block;
+            background: #fef3c7;
+            color: #92400e;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+        .badge-green {
+            background: #dcfce7;
+            color: #166534;
+        }
+        .step-box {
+            background: #f1f5f9;
+            border-left: 4px solid #007aff;
+            padding: 16px 20px;
+            border-radius: 8px;
+            margin: 16px 0;
+        }
+        code {
+            background: #e2e8f0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: monospace;
+        }
+        ul {
+            padding-left: 20px;
+        }
+        li {
+            margin-bottom: 8px;
+        }
+        .card-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin: 16px 0;
+        }
+        .mini-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            padding: 12px 16px;
+            border-radius: 10px;
+        }
+        .mini-card strong {
+            color: #1e40af;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🪙 CoinVault — iOS Numismatic AI & Multi-Platform Selling Platform</h1>
+        <p><span class="badge">Platform Guide & Walkthrough</span> <span class="badge badge-green">47 Automated Tests Passing</span> <span class="badge">32 Series Database (US, Ancients, World & Banknotes)</span></p>
+
+        <h2>Overview</h2>
+        <p>CoinVault is an iOS-optimized platform designed specifically for numismatists, coin roll hunters, and online resellers. It provides:</p>
+        <ul>
+            <li><strong>Live Camera & Hardware Shutter:</strong> Front (Obverse) and Back (Reverse) photo captures with circular coin reticle, alignment guides, native iOS hardware camera launch (bypasses iOS HTTP WebRTC restrictions), and photo library picker.</li>
+            <li><strong>AI Coin Identification:</strong> Powered by <strong>Gemini 3.8 Flash Vision</strong> to recognize coin series, denomination, year, mint mark (P, D, S, CC, O, W), strike type, and condition, with full offline catalog fallback.</li>
+            <li><strong>Material Composition & Bullion Melt Calculator:</strong> Reports exact metal composition (e.g., 90% Silver, 24K Gold) and computes live bullion melt values based on spot prices, with live spot customization in Settings (⚙️).</li>
+            <li><strong>High-Dollar Varieties & Key Dates:</strong> Highlights the specific dates, doubled dies (DDO/DDR), repunched mint marks, overdates, and rare errors that bring the most money (e.g. 1955 DDO Penny, 1937-D 3-Legged Buffalo, 1893-S Morgan, 1982 No-P Dime) with value estimates up to $100,000+.</li>
+            <li><strong>1-Click Multi-Platform Selling Listings:</strong> Instantly generates selling drafts across 4 major online marketplaces: eBay, Mercari, Whatnot, and Reddit r/CoinSales.</li>
+            <li><strong>Listing Photos Showcase & Mobile Save:</strong> Displays your coin photos directly inside the selling tab with a 1-tap "Save Photos" button to save images to your iPhone camera roll.</li>
+        </ul>
+
+        <h2>How to Run CoinVault (3 Options)</h2>
+        
+        <div class="step-box" style="border-left-color: #34c759; background: #f0fdf4;">
+            <h3 style="color: #166534;">Option 1: 100% Standalone iPhone Mode (No PC Needed)</h3>
+            <p>CoinVault now bundles the entire numismatic database, melt calculations, key varieties, and selling engine directly in client-side JavaScript. It runs 100% inside iOS Safari / PWA without needing a local computer server at all!</p>
+            <ul>
+                <li>Tap <strong>⚙️ Settings</strong> &rarr; Set <strong>Operation Mode</strong> to <strong>⚡ Standalone iPhone Mode</strong>.</li>
+                <li>(Optional) Enter your free Google Gemini API key from <code>aistudio.google.com</code> for direct mobile AI vision.</li>
+                <li>Tap <strong>Share</strong> in Safari &rarr; <strong>"Add to Home Screen"</strong> to install as a permanent native app.</li>
+            </ul>
+        </div>
+
+        <div class="step-box" style="border-left-color: #007aff; background: #f0f9ff;">
+            <h3 style="color: #0369a1;">Option 2: Free 1-Click Cloud Hosting (Public HTTPS URL)</h3>
+            <p>Host CoinVault on a free public HTTPS web address accessible from anywhere on 5G or Wi-Fi with your PC turned off:</p>
+            <ul>
+                <li><strong>GitHub Pages:</strong> 100% free static PWA hosting with zero servers (pre-configured at root).</li>
+                <li><strong>Render:</strong> 1-click deploy of the full Python backend using <code>render.yaml</code>.</li>
+                <li><strong>Vercel:</strong> 1-click deploy using <code>vercel.json</code>.</li>
+                <li><em>See <a href="COINVAULT_STANDALONE_GUIDE.html" target="_blank" style="color:#007aff; font-weight:700;">COINVAULT_STANDALONE_GUIDE.html</a> for step-by-step instructions.</em></li>
+            </ul>
+        </div>
+
+        <div class="step-box" style="border-left-color: #64748b; background: #f8fafc;">
+            <h3 style="color: #334155;">Option 3: Local PC Server Mode</h3>
+            <p>Start the local server on your PC: <code>python run_server.py</code></p>
+            <p>On your iPhone (same Wi-Fi), open Safari to: <code>http://&lt;YOUR_COMPUTER_IP&gt;:8000</code></p>
+        </div>
+
+        <h2>Multi-Platform Selling Capabilities</h2>
+        <div class="card-grid">
+            <div class="mini-card">
+                <strong>eBay Selling Engine</strong>
+                <p style="font-size:13px; margin:4px 0 0;">80-char SEO title, category mapping, mobile-responsive HTML template, pre-filled web deep links, and eBay Inventory API draft creator.</p>
+            </div>
+            <div class="mini-card">
+                <strong>Mercari Selling Engine</strong>
+                <p style="font-size:13px; margin:4px 0 0;">Formatted listing title, pricing recommendation, coin specs, condition notes, and hashtags (#silver, #coins, #numismatics).</p>
+            </div>
+            <div class="mini-card">
+                <strong>Whatnot Livestream Auction</strong>
+                <p style="font-size:13px; margin:4px 0 0;">Livestream item title, starting bid recommendation, Buy It Now price, and sudden death host notes.</p>
+            </div>
+            <div class="mini-card">
+                <strong>Reddit r/CoinSales & r/Pmsforsale</strong>
+                <p style="font-size:13px; margin:4px 0 0;">Formatted [WTS] Markdown post with item specs, bullion melt value notes, asking price, shipping breakdown, and payment methods.</p>
+            </div>
+        </div>
+
+        <h2>Features Walkthrough</h2>
+        <h3>1. Scanning & Taking Photos</h3>
+        <ul>
+            <li>Use the viewfinder with circular guide to frame the coin.</li>
+            <li>Tap the shutter button to take a photo or launch the native iPhone camera, or choose from your iPhone photo library.</li>
+            <li>Capture both the Front (Obverse) for date, and Back (Reverse) for mint mark.</li>
+            <li>Or test immediately using the 1-Tap Sample Coins carousel.</li>
+        </ul>
+
+        <h3>2. Numismatic & Market Valuation</h3>
+        <ul>
+            <li><strong>Composition:</strong> Weight, diameter, fineness, and precious metal troy ounces.</li>
+            <li><strong>Melt Value:</strong> Live calculation of intrinsic gold/silver bullion value.</li>
+            <li><strong>Grade Breakdown:</strong> Market value estimates across Good (G-4), Fine (F-12), Extra Fine (EF-40), AU-58, and Mint State (MS-65+).</li>
+            <li><strong>Top Money Varieties:</strong> Table of valuable varieties, errors, and key dates to watch out for.</li>
+        </ul>
+
+        <h3>3. Making Selling Listings</h3>
+        <ul>
+            <li><strong>Open & Pre-fill on eBay:</strong> Direct link that opens eBay's listing creation page with the title and category pre-filled.</li>
+            <li><strong>Copy HTML:</strong> 1-click copy of the responsive, professional listing description template.</li>
+            <li><strong>Save Photos:</strong> 1-tap button to save listing images to camera roll.</li>
+            <li><strong>Mercari / Whatnot / Reddit:</strong> Dedicated tabs for instant 1-click cross-posting.</li>
+            <li><strong>Publish via API:</strong> Add your eBay User Token in Settings (⚙️) to push inventory drafts directly into your eBay Seller Hub.</li>
+        </ul>
+    </div>
+</body>
+</html>
