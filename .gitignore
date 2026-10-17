@@ -29,3 +29,7 @@ ENV/
 # OS files
 .DS_Store
 Thumbs.db
+
+# Runtime upload images from tests/users
+static/uploads/*
+!static/uploads/.gitkeep

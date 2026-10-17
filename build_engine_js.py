@@ -155,16 +155,32 @@ js_code = f"""/**
     if (!mintStr) return '';
     const m = String(mintStr).trim();
     const mLower = m.toLowerCase();
-    if (['none', 'p', 'phila', 'philadelphia', 'no mint'].some(prefix => mLower.startsWith(prefix))) {{
+
+    if (['none', 'no mint', 'philadelphia', 'phila'].some(p => mLower.startsWith(p))) {{
       return '';
     }}
+    if (m === 'P' || mLower === 'p (philadelphia)') {{
+      return '';
+    }}
+    if (mLower.includes('perth')) {{
+      return 'P';
+    }}
+    if (mLower.startsWith('m°') || mLower.startsWith('mo')) {{
+      return 'M°';
+    }}
+
     const match = m.match(/^([A-Za-z]{{1,2}})\\b/);
     if (match) {{
       const code = match[1].toUpperCase();
       if (['D', 'S', 'CC', 'O', 'W'].includes(code)) return code;
     }}
-    if (['D', 'S', 'CC', 'O', 'W'].includes(m.toUpperCase())) {{
-      return m.toUpperCase();
+
+    const clean = m.split('(')[0].trim();
+    if (['philadelphia', 'phila', 'none'].includes(clean.toLowerCase())) {{
+      return '';
+    }}
+    if (clean.length <= 25) {{
+      return clean;
     }}
     return '';
   }}
@@ -355,13 +371,25 @@ js_code = f"""/**
     return null;
   }}
 
-  // 9. Construct eBay search-optimized title strictly under 80 characters
   function buildEbayTitle(coinName, year, mintMark, gradeOrCondition, varietyNotes, metal, country) {{
     const cleanMint = normalizeMintMark(mintMark || '');
-    const mintSuffix = cleanMint ? `-${{cleanMint}}` : '';
+    let cleanYear = year ? String(year).trim() : '';
+    if (cleanYear.startsWith('-') && /^\\d+$/.test(cleanYear.slice(1))) {{
+      cleanYear = cleanYear.slice(1) + ' BC';
+    }}
 
     const parts = [];
-    if (year) parts.push(`${{year}}${{mintSuffix}}`);
+    if (cleanYear) {{
+      if (cleanMint) {{
+        if (cleanYear.toLowerCase().includes('bc') || cleanYear.toLowerCase().includes('ad') || cleanYear.includes(' ')) {{
+          parts.push(`${{cleanYear}} (${{cleanMint}})`);
+        }} else {{
+          parts.push(`${{cleanYear}}-${{cleanMint}}`);
+        }}
+      }} else {{
+        parts.push(cleanYear);
+      }}
+    }}
     parts.push(coinName);
 
     const metalStr = String(metal || '').toLowerCase();
@@ -719,7 +747,11 @@ ${{tags}}`.trim();
 
     const prelistUrl = generateEbayPrelistUrl(ebayTitle, coinMeta.ebay_category_id || '');
     const skuMint = cleanMint ? cleanMint : 'P';
-    const cleanSkuYear = String(year).replace(/[^A-Za-z0-9]/g, '') || 'GEN';
+    let rawYearStr = year ? String(year).trim() : '';
+    if (rawYearStr.startsWith('-') && /^\\d+$/.test(rawYearStr.slice(1))) {{
+      rawYearStr = rawYearStr.slice(1) + 'BC';
+    }}
+    const cleanSkuYear = rawYearStr.replace(/[^A-Za-z0-9]/g, '') || 'GEN';
     const sku = `COIN-${{targetId.slice(0, 6).toUpperCase()}}-${{cleanSkuYear}}-${{skuMint}}-${{Math.floor(pricing.recommended_buy_it_now)}}`;
 
     const mercariListing = generateMercariListing(ebayTitle, mergedCoinInfo, estimatedGrade, pricing.recommended_buy_it_now, conditionNotes);

@@ -15,25 +15,38 @@ EBAY_SELL_URL = "https://api.ebay.com/sell/inventory/v1"
 def normalize_mint_mark(mint_str: str) -> str:
     """
     Normalizes descriptive mint strings like 'None (Philadelphia)', 'D (Denver - 1921 only)',
-    'S (San Francisco)', 'CC (Carson City)', 'O (New Orleans)', 'W (West Point)'
-    into standard mint marks ('D', 'S', 'CC', 'O', 'W', or '' for Philadelphia / None).
+    'S (San Francisco)', 'CC (Carson City)', 'M° (Casa de Moneda)', 'Athens (ΑΘΕ)', 'Rome'
+    into standard clean mint marks.
     """
     if not mint_str:
         return ""
-    m = mint_str.strip()
+    m = str(mint_str).strip()
     m_lower = m.lower()
-    if any(m_lower.startswith(prefix) for prefix in ("none", "p", "phila", "philadelphia", "no mint")):
+
+    if any(m_lower.startswith(p) for p in ("none", "no mint", "philadelphia", "phila")):
         return ""
-    
-    # Check for recognized letter codes at start
-    match = re.match(r"^([A-Za-z]{1,2})\b", m)
-    if match:
-        code = match.group(1).upper()
+    if m == "P" or m_lower == "p (philadelphia)":
+        return ""
+
+    if "perth" in m_lower:
+        return "P"
+    if m_lower.startswith("m°") or m_lower.startswith("mo"):
+        return "M°"
+
+    # US Classic Letter Mints
+    us_match = re.match(r"^([A-Za-z]{1,2})\b", m)
+    if us_match:
+        code = us_match.group(1).upper()
         if code in ("D", "S", "CC", "O", "W"):
             return code
-            
-    if m.upper() in ("D", "S", "CC", "O", "W"):
-        return m.upper()
+
+    # Ancient or World mint names
+    clean = m.split("(")[0].strip()
+    if clean.lower() in ("philadelphia", "phila", "none"):
+        return ""
+    if len(clean) <= 25:
+        return clean
+
     return ""
 
 
@@ -51,12 +64,20 @@ def build_ebay_title(
     eBay title limit is 80 characters.
     """
     clean_mint = normalize_mint_mark(mint_mark)
-    mint_suffix = f"-{clean_mint}" if clean_mint else ""
+    clean_year = str(year).strip() if year else ""
+    if clean_year.startswith("-") and clean_year[1:].isdigit():
+        clean_year = f"{clean_year[1:]} BC"
 
     # Build primary components
     parts = []
-    if year:
-        parts.append(f"{year}{mint_suffix}")
+    if clean_year:
+        if clean_mint:
+            if "bc" in clean_year.lower() or "ad" in clean_year.lower() or " " in clean_year:
+                parts.append(f"{clean_year} ({clean_mint})")
+            else:
+                parts.append(f"{clean_year}-{clean_mint}")
+        else:
+            parts.append(clean_year)
     parts.append(coin_name)
 
     if metal and "silver" in metal.lower() and "silver" not in coin_name.lower():

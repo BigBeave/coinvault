@@ -178,3 +178,30 @@ def test_coin_engine_robust_edge_cases():
     assert res.returncode == 0, f"Edge case testing failed: {res.stderr}"
     assert "EDGE_CASES_PASSED" in res.stdout
 
+
+def test_backend_package_import():
+    """Verify that backend is a valid python package and imports correctly from anywhere."""
+    import backend
+    import backend.coin_database as b_db
+    import backend.coin_analyzer as b_ca
+    import backend.ebay_service as b_es
+    assert len(b_db.COIN_CATALOG) == 32
+    assert "athenian_owl_tetradrachm" in b_db.COIN_CATALOG
+    assert "world_banknote_currency" in b_db.COIN_CATALOG
+
+
+def test_ancient_negative_year_sku_in_node():
+    """Verify Node.js engine handles negative BC years cleanly in titles and SKUs."""
+    script = """
+    const engine = require('./static/js/coin-engine.js');
+    const rep = engine.generateCoinReport({ coinHint: 'roman_denarius', yearHint: '-44' });
+    if (!rep.ebay_listing.title.includes('44 BC')) process.exit(1);
+    if (rep.ebay_listing.title.includes('-44')) process.exit(2);
+    if (!rep.ebay_listing.sku.includes('44BC')) process.exit(3);
+    console.log('NODE_BC_YEAR_PASSED');
+    """
+    res = subprocess.run(["node", "-e", script], cwd=BASE_DIR, capture_output=True, text=True)
+    assert res.returncode == 0, f"Node BC year test failed: {res.stderr}"
+    assert "NODE_BC_YEAR_PASSED" in res.stdout
+
+

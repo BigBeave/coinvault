@@ -254,3 +254,31 @@ def test_ancient_and_world_multiplatform_categories():
     mer_note = generate_mercari_listing("Banknote", note, "CU", 150.0)
     assert "#papermoney" in mer_note["tags"]
 
+
+def test_negative_and_bc_year_ebay_titles():
+    # Negative year representing BC (e.g., -44 for Julius Caesar)
+    t1 = build_ebay_title(
+        coin_name="Roman Empire Silver Denarius",
+        year="-44",
+        grade_or_condition="AU-58",
+        metal="90% Silver",
+        country="Roman Empire"
+    )
+    assert len(t1) <= 80
+    assert "44 BC" in t1
+    assert "-44" not in t1
+    assert "Ancient Coin" in t1
+
+    # Ancient coin with descriptive mint mark
+    t2 = build_ebay_title(
+        coin_name="Roman Empire Silver Denarius",
+        year="44 BC",
+        mint_mark="Rome",
+        grade_or_condition="VF-20",
+        country="Roman Empire"
+    )
+    assert len(t2) <= 80
+    assert "44 BC (Rome)" in t2
+    assert "Ancient Coin" in t2
+
+

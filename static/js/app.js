@@ -418,9 +418,15 @@ function renderReport(report) {
   if (melt.has_precious_metal) {
     document.getElementById('metricMeltValue').textContent = `$${melt.melt_value_usd.toFixed(2)}`;
     document.getElementById('metricMeltDetails').textContent = `${melt.net_weight_troy_oz.toFixed(4)} oz ${melt.metal}`;
+  } else if (report.metal_type === 'paper' || (report.composition && report.composition.toLowerCase().includes('paper')) || (melt.metal && melt.metal.toLowerCase().includes('banknote'))) {
+    document.getElementById('metricMeltValue').textContent = 'Paper Currency';
+    document.getElementById('metricMeltDetails').textContent = 'Collector Value (No Bullion Melt)';
+  } else if (report.metal_type === 'bronze' || (melt.metal && melt.metal.toLowerCase().includes('bronze'))) {
+    document.getElementById('metricMeltValue').textContent = 'Ancient Bronze';
+    document.getElementById('metricMeltDetails').textContent = 'Numismatic Value (No Bullion Melt)';
   } else {
     document.getElementById('metricMeltValue').textContent = 'Base Metal';
-    document.getElementById('metricMeltDetails').textContent = melt.metal;
+    document.getElementById('metricMeltDetails').textContent = melt.metal || 'Base Metal';
   }
 
   // Specifications
@@ -629,8 +635,8 @@ async function loadCoinCatalog() {
           <div style="font-size:11px; color:var(--ios-gold); margin-top:2px;">Composition: ${c.composition}</div>
         </div>
         <div style="text-align:right;">
-          <div style="font-size:14px; font-weight:800; color:${c.melt_value_usd > 0 ? 'var(--ios-green)' : 'var(--ios-silver)'};">
-            ${c.melt_value_usd > 0 ? '$' + c.melt_value_usd.toFixed(2) + ' Melt' : 'Base Metal'}
+          <div style="font-size:14px; font-weight:800; color:${c.melt_value_usd > 0 ? 'var(--ios-green)' : (c.metal_type === 'paper' || c.metal_type === 'bronze' ? 'var(--ios-gold)' : 'var(--ios-silver)')};">
+            ${c.melt_value_usd > 0 ? '$' + c.melt_value_usd.toFixed(2) + ' Melt' : (c.metal_type === 'paper' ? 'Banknote' : (c.metal_type === 'bronze' ? 'Ancient Bronze' : 'Base Metal'))}
           </div>
           <div style="font-size:11px; color:var(--ios-blue); font-weight:600; margin-top:4px;">
             ${c.key_dates_count} Key Varieties &rarr;

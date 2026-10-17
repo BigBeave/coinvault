@@ -5,6 +5,7 @@ to detect coin types, dates, mint marks, errors, compositions, values, and listi
 """
 
 import os
+import sys
 import json
 import base64
 import re
@@ -12,18 +13,35 @@ from typing import Dict, Any, List, Optional
 from PIL import Image
 import io
 
-from coin_database import COIN_CATALOG, calculate_melt_value, find_matching_coin
-from ebay_service import (
-    build_ebay_title,
-    normalize_mint_mark,
-    generate_ebay_html_description,
-    generate_ebay_prelist_url,
-    build_ebay_inventory_payload,
-    build_ebay_offer_payload,
-    generate_mercari_listing,
-    generate_whatnot_listing,
-    generate_reddit_listing
-)
+# Ensure current module directory is in sys.path
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+try:
+    from coin_database import COIN_CATALOG, calculate_melt_value, find_matching_coin
+    from ebay_service import (
+        build_ebay_title,
+        normalize_mint_mark,
+        generate_ebay_html_description,
+        generate_ebay_prelist_url,
+        build_ebay_inventory_payload,
+        build_ebay_offer_payload,
+        generate_mercari_listing,
+        generate_whatnot_listing,
+        generate_reddit_listing
+    )
+except ImportError:
+    from backend.coin_database import COIN_CATALOG, calculate_melt_value, find_matching_coin
+    from backend.ebay_service import (
+        build_ebay_title,
+        normalize_mint_mark,
+        generate_ebay_html_description,
+        generate_ebay_prelist_url,
+        build_ebay_inventory_payload,
+        build_ebay_offer_payload,
+        generate_mercari_listing,
+        generate_whatnot_listing,
+        generate_reddit_listing
+    )
 
 def get_default_year_for_coin(coin_meta: Dict[str, Any]) -> str:
     """Returns an authentic baseline year within the coin's mintage period."""
@@ -152,12 +170,27 @@ def analyze_coin_with_gemini(
             "Please analyze these coin image(s) carefully. Detect year, mint mark, variety, errors, and grade."
         ]
 
-        response = client.models.generate_content(
-            model="gemini-3.8-flash",
-            contents=prompt_contents,
-        )
+        models_to_try = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"]
+        resp_text = None
+        last_exc = None
+        for model_name in models_to_try:
+            try:
+                response = client.models.generate_content(
+                    model=model_name,
+                    contents=prompt_contents,
+                )
+                if response and response.text:
+                    resp_text = response.text.strip()
+                    break
+            except Exception as m_err:
+                last_exc = m_err
+                continue
 
-        resp_text = response.text.strip()
+        if not resp_text:
+            if last_exc:
+                print(f"Gemini Vision call note/fallback: {last_exc}")
+            return None
+
         # Clean json formatting
         if resp_text.startswith("```json"):
             resp_text = resp_text[7:]
@@ -290,7 +323,10 @@ def generate_coin_report(
     prelist_url = generate_ebay_prelist_url(ebay_title, coin_meta.get("ebay_category_id", ""))
 
     sku_mint = clean_mint if clean_mint else "P"
-    clean_sku_year = re.sub(r'[^A-Za-z0-9]', '', str(year)) or "GEN"
+    raw_year_str = str(year).strip()
+    if raw_year_str.startswith("-") and raw_year_str[1:].isdigit():
+        raw_year_str = f"{raw_year_str[1:]}BC"
+    clean_sku_year = re.sub(r'[^A-Za-z0-9]', '', raw_year_str) or "GEN"
     sku = f"COIN-{target_id[:6].upper()}-{clean_sku_year}-{sku_mint}-{int(pricing['recommended_buy_it_now'])}"
 
     inventory_payload = build_ebay_inventory_payload(
