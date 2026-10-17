@@ -165,9 +165,15 @@ def test_coin_engine_robust_edge_cases():
     """Verify static/js/coin-engine.js handles null/undefined inputs safely without unhandled TypeErrors."""
     script = """
     const engine = require('./static/js/coin-engine.js');
-    // Test empty opts
-    const rep1 = engine.generateCoinReport();
-    if (!rep1.success || rep1.coin_name !== 'Morgan Silver Dollar') process.exit(1);
+    // Test empty opts throws rather than silently returning Morgan Dollar
+    let threw = false;
+    try {
+      engine.generateCoinReport();
+    } catch (e) {
+      threw = true;
+      if (!e.message.includes('Cannot generate coin report')) process.exit(1);
+    }
+    if (!threw) process.exit(1);
 
     // Test null coinData in listing generators
     const mercari = engine.generateMercariListing('Title', null, 'AU', 50);
@@ -220,5 +226,17 @@ def test_ancient_negative_year_sku_in_node():
     res = subprocess.run(["node", "-e", script], cwd=BASE_DIR, capture_output=True, text=True)
     assert res.returncode == 0, f"Node BC year test failed: {res.stderr}"
     assert "NODE_BC_YEAR_PASSED" in res.stdout
+
+
+def test_html_initial_placeholders_neutral():
+    """Verify that initial HTML markup contains neutral placeholders and does not default to Morgan Dollar values."""
+    for path in [os.path.join(BASE_DIR, "index.html"), os.path.join(BASE_DIR, "static", "index.html")]:
+        with open(path, "r", encoding="utf-8") as f:
+            html = f.read()
+        assert 'id="specDesigner">George T. Morgan<' not in html
+        assert 'id="specDesigner">-' in html
+        assert 'id="metricAvgValue">$55.00<' not in html
+        assert 'id="metricMeltValue">$24.36<' not in html
+
 
 

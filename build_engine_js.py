@@ -187,7 +187,7 @@ js_code = f"""/**
 
   // 6. Default authentic baseline year for series
   function getDefaultYearForCoin(coinMeta) {{
-    if (!coinMeta) return '1921';
+    if (!coinMeta) return 'Unknown';
     if (coinMeta.default_year) return String(coinMeta.default_year);
     const cid = coinMeta.id || '';
     const knownDefaults = {{
@@ -225,10 +225,10 @@ js_code = f"""/**
       world_banknote_currency: '1935'
     }};
     if (knownDefaults[cid]) return knownDefaults[cid];
-    if (coinMeta.years && coinMeta.years.includes('-')) {{
+    if (coinMeta.years) {{
       return coinMeta.years.split('-')[0].trim();
     }}
-    return '1921';
+    return 'Unknown';
   }}
 
   // 7. Calculate precious metal melt/bullion value
@@ -835,8 +835,7 @@ ${{tags}}`.trim();
         coinMeta = createDynamicCoinMeta({{ coin_name: coinHint }}, coinHint);
         targetId = coinMeta.id;
       }} else {{
-        targetId = 'morgan_dollar';
-        coinMeta = COIN_CATALOG[targetId];
+        throw new Error('Cannot generate coin report without either coinHint or AI analysisData. Please select a series or configure Gemini Vision.');
       }}
     }}
 

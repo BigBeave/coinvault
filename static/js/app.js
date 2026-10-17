@@ -447,8 +447,8 @@ function renderReport(report) {
   // Hero Card
   document.getElementById('heroCoinName').textContent = `${report.year} ${report.coin_name}`;
   document.getElementById('heroSubtitle').textContent = `${report.denomination} • ${report.country}`;
-  document.getElementById('heroGrade').textContent = report.estimated_grade;
-  document.getElementById('heroMint').textContent = `Mint: ${report.clean_mint || report.mint_mark || 'Philadelphia'}`;
+  const displayMint = report.clean_mint || (report.mint_mark && report.mint_mark !== 'None' ? report.mint_mark : ((report.country && report.country.includes('United States')) ? 'None (Philadelphia)' : 'None'));
+  document.getElementById('heroMint').textContent = `Mint: ${displayMint}`;
   document.getElementById('heroStrike').textContent = report.strike_type || 'Business Strike';
 
   // AI Vision Badge
@@ -488,7 +488,7 @@ function renderReport(report) {
   document.getElementById('specWeight').textContent = `${report.weight_grams} grams`;
   document.getElementById('specDiameter').textContent = `${report.diameter_mm} mm`;
   document.getElementById('specEdge').textContent = report.edge || 'Reeded';
-  document.getElementById('specDesigner').textContent = report.designer || 'US Mint Engraver';
+  document.getElementById('specDesigner').textContent = report.designer || 'Official Mint Engraver';
 
   // High Value Varieties (Crucial Feature)
   const varietiesContainer = document.getElementById('varietiesList');
@@ -549,7 +549,7 @@ function renderReport(report) {
   // Populate Tab 3: eBay Listing
   const ebay = report.ebay_listing || {};
   const listingTitleInput = document.getElementById('listingTitle');
-  listingTitleInput.value = ebay.title || `${report.year} ${report.coin_name} Old US Coin`;
+  listingTitleInput.value = ebay.title || `${report.year} ${report.coin_name} Collectible`;
   updateTitleCounter();
 
   document.getElementById('listingPrice').value = ebay.buy_it_now_price || 49.99;

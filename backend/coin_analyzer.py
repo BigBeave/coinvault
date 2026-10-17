@@ -85,9 +85,9 @@ def get_default_year_for_coin(coin_meta: Dict[str, Any]) -> str:
     if cid in known_defaults:
         return known_defaults[cid]
     years_str = coin_meta.get("years", "")
-    if "-" in years_str:
+    if years_str:
         return years_str.split("-")[0].strip()
-    return "1921"
+    return "Unknown"
 
 NUMISMATIC_SYSTEM_PROMPT = """
 You are an expert World-Class Numismatist and Coin Authenticator (PCGS / NGC Master Grader).
@@ -192,14 +192,25 @@ def analyze_coin_with_gemini(
             return None
 
         # Clean json formatting
-        if resp_text.startswith("```json"):
-            resp_text = resp_text[7:]
-        if resp_text.startswith("```"):
-            resp_text = resp_text[3:]
-        if resp_text.endswith("```"):
-            resp_text = resp_text[:-3]
+        cleaned = resp_text.strip()
+        if cleaned.startswith("```json"):
+            cleaned = cleaned[7:]
+        elif cleaned.startswith("```"):
+            cleaned = cleaned[3:]
+        if cleaned.endswith("```"):
+            cleaned = cleaned[:-3]
+        cleaned = cleaned.strip()
 
-        parsed_data = json.loads(resp_text.strip())
+        try:
+            parsed_data = json.loads(cleaned)
+        except Exception:
+            first_brace = cleaned.find("{")
+            last_brace = cleaned.rfind("}")
+            if first_brace != -1 and last_brace != -1 and last_brace > first_brace:
+                parsed_data = json.loads(cleaned[first_brace:last_brace + 1])
+            else:
+                raise
+
         parsed_data["model_used"] = model_name
         return parsed_data
     except Exception as e:
@@ -389,9 +400,7 @@ def generate_coin_report(
             coin_meta = create_dynamic_coin_meta({"coin_name": coin_hint}, coin_hint)
             target_id = coin_meta["id"]
         else:
-            # Baseline demo fallback for empty parameters
-            target_id = "morgan_dollar"
-            coin_meta = COIN_CATALOG[target_id]
+            raise ValueError("Cannot generate coin report without either coin_hint or AI analysis_data. Please select a series or configure Gemini Vision.")
 
     # Extract detected or provided attributes with authentic series-appropriate defaults
     default_year = get_default_year_for_coin(coin_meta)

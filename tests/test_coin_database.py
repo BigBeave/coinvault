@@ -320,4 +320,19 @@ def test_uncataloged_gold_and_bronze_coins():
     assert bronze_rep["melt_value"]["has_precious_metal"] is False
 
 
+def test_generate_report_without_hint_or_vision_raises_error():
+    """Verify that calling generate_coin_report without analysis_data or coin_hint raises ValueError instead of silently defaulting to Morgan Dollar."""
+    from coin_analyzer import generate_coin_report
+    with pytest.raises(ValueError) as excinfo:
+        generate_coin_report(coin_hint="", analysis_data=None)
+    assert "Cannot generate coin report without either coin_hint or AI analysis_data" in str(excinfo.value)
+
+
+def test_default_year_for_unknown_coin_not_1921():
+    """Verify get_default_year_for_coin returns Unknown for coins without known years, never defaulting to 1921."""
+    from coin_analyzer import get_default_year_for_coin
+    meta = {"id": "custom_token", "name": "Custom Token", "years": ""}
+    assert get_default_year_for_coin(meta) == "Unknown"
+
+
 
